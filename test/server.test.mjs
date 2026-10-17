@@ -1,6 +1,11 @@
 import assert from "node:assert/strict";
 import { after, before, test } from "node:test";
-import { createServer, normalizeSearchResults, parsePlan } from "../server.mjs";
+import {
+  createServer,
+  normalizeSearchResults,
+  parsePlan,
+  validateWriterAnswer,
+} from "../server.mjs";
 
 test("parsePlan trims, deduplicates, and caps search queries", () => {
   const plan = parsePlan(
@@ -11,7 +16,7 @@ test("parsePlan trims, deduplicates, and caps search queries", () => {
   );
   assert.deepEqual(plan, {
     goal: "compare options",
-    queries: ["topic", "third", "fourth", "fifth"],
+    queries: ["topic", "third", "fourth"],
   });
 });
 
@@ -41,12 +46,38 @@ test("normalizeSearchResults excludes unsafe URL schemes", () => {
   );
 });
 
+test("writer answer renders only analyst-approved source citations", () => {
+  const findings = [{ claim: "A sourced finding.", source_ids: ["S1"] }];
+  assert.equal(
+    validateWriterAnswer(
+      JSON.stringify({
+        paragraphs: [{ text: "A concise answer.", source_ids: ["S1"] }],
+      }),
+      findings,
+    ),
+    "A concise answer. [S1]",
+  );
+  assert.throws(
+    () =>
+      validateWriterAnswer(
+        JSON.stringify({
+          paragraphs: [{ text: "An unsupported answer.", source_ids: ["S2"] }],
+        }),
+        findings,
+      ),
+    /not attached to an analyst finding/,
+  );
+});
+
 const plannerResponse = JSON.stringify({
   goal: "Find two sources",
   queries: ["example research"],
 });
 const analystResponse = JSON.stringify({
   findings: [{ claim: "A sourced finding.", source_ids: ["S1"] }],
+});
+const writerResponse = JSON.stringify({
+  paragraphs: [{ text: "A short answer grounded in the source.", source_ids: ["S1"] }],
 });
 
 let server;
@@ -58,11 +89,13 @@ before(async () => {
     if (url.pathname === "/api/chat") {
       const body = JSON.parse(options.body);
       const systemMessage = body.messages[0].content;
+      assert.equal(body.think, false);
+      assert.ok(body.options.num_predict > 0);
       const content = systemMessage.includes("planning agent")
         ? plannerResponse
         : systemMessage.includes("evidence analyst")
           ? analystResponse
-          : "A short answer grounded in the source [S1].";
+          : writerResponse;
       return new Response(JSON.stringify({ message: { content } }), {
         status: 200,
         headers: { "content-type": "application/json" },
@@ -126,7 +159,7 @@ test("research endpoint streams agent progress, sources, and cited answer", asyn
   assert.match(stream, /event: sources/);
   assert.match(stream, /"id":"S1"/);
   assert.match(stream, /event: answer/);
-  assert.match(stream, /A short answer grounded in the source \[S1\]/);
+  assert.match(stream, /A short answer grounded in the source\. \[S1\]/);
   assert.match(stream, /event: done/);
 });
 
@@ -138,4 +171,41 @@ test("research endpoint rejects blank questions", async () => {
   });
   assert.equal(response.status, 400);
   assert.match((await response.json()).error, /between 1 and 600 characters/);
+});
+
+test("research reports the model pull command when Ollama has no configured model", async () => {
+  const missingModelFetch = async (input) => {
+    const url = new URL(input);
+    if (url.pathname === "/api/chat") {
+      return new Response(
+        JSON.stringify({ error: 'model "qwen3:4b" not found, try pulling it first' }),
+        { status: 404, headers: { "content-type": "application/json" } },
+      );
+    }
+    throw new Error(`Unexpected test fetch URL: ${url}`);
+  };
+  const testServer = createServer({
+    fetchImpl: missingModelFetch,
+    env: {
+      OLLAMA_URL: "http://ollama.test",
+      OLLAMA_MODEL: "qwen3:4b",
+      SEARXNG_URL: "http://search.test",
+    },
+  });
+  await new Promise((resolve) => testServer.listen(0, "127.0.0.1", resolve));
+  try {
+    const response = await fetch(`http://127.0.0.1:${testServer.address().port}/api/research`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ question: "Research a question" }),
+    });
+    const stream = await response.text();
+    assert.match(stream, /event: error/);
+    assert.match(stream, /Ollama model \\"qwen3:4b\\" is not installed/);
+    assert.match(stream, /docker compose exec ollama ollama pull qwen3:4b/);
+  } finally {
+    await new Promise((resolve, reject) =>
+      testServer.close((error) => (error ? reject(error) : resolve())),
+    );
+  }
 });

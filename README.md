@@ -25,10 +25,12 @@ to `127.0.0.1:3000`, and Ollama/SearXNG are not published on host ports.
 
 ```sh
 docker compose up -d --build
-docker compose exec ollama ollama pull qwen3:4b
 ```
 
-Open <http://127.0.0.1:3000>. The first model download can take a while. Change
+Compose waits for Ollama, then automatically downloads the configured model.
+The first download can take a while; view progress with
+`docker compose logs -f ollama-model`. The app starts after the pull succeeds.
+Open <http://127.0.0.1:3000>. Change
 `OLLAMA_MODEL` in `.env` to another model available in Ollama if your device
 needs a smaller or larger model, then recreate the app with
 `docker compose up -d --build`.
@@ -66,8 +68,11 @@ separately and inserts model output as text rather than HTML.
 
 ## Troubleshooting
 
-- `fetch failed` or an Ollama HTTP error: check `docker compose logs ollama`
-  and confirm the model pull completed.
+- An Ollama model 404: check `docker compose logs ollama-model`. Compose pulls
+  the configured model on startup; if the pull failed, retry with
+  `docker compose run --rm ollama-model`.
+- `fetch failed` or another Ollama HTTP error: check
+  `docker compose logs ollama ollama-model`.
 - SearXNG JSON errors: check `docker compose logs searxng` and confirm the
   service has started with JSON format enabled in `searxng/settings.yml`.
 - No results: retry with more specific terms or check SearXNG's outbound

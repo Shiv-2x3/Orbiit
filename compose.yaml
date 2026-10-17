@@ -9,8 +9,8 @@ services:
       OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen3:4b}
       SEARXNG_URL: http://searxng:8080
     depends_on:
-      ollama:
-        condition: service_started
+      ollama-model:
+        condition: service_completed_successfully
       searxng:
         condition: service_started
     ports:
@@ -26,6 +26,26 @@ services:
   ollama:
     image: ollama/ollama:latest
     restart: unless-stopped
+    volumes:
+      - ollama_data:/root/.ollama
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  ollama-model:
+    image: ollama/ollama:latest
+    restart: "no"
+    entrypoint: ["ollama"]
+    command: ["pull", "${OLLAMA_MODEL:-qwen3:4b}"]
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+    depends_on:
+      ollama:
+        condition: service_healthy
     volumes:
       - ollama_data:/root/.ollama
     security_opt:
