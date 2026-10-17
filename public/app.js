@@ -25,8 +25,7 @@ function showToast(message) {
 }
 
 function setConnection(ok, detail) {
-  connection.classList.toggle("connected", ok);
-  connection.classList.toggle("disconnected", !ok);
+  connection.firstElementChild.className = `size-1.5 rounded-full ${ok ? "bg-white" : "bg-neutral-500"}`;
   connection.lastElementChild.textContent = detail;
 }
 
@@ -59,20 +58,29 @@ function renderAgent(payload) {
   let row = agentRows.get(payload.agent);
   if (!row) {
     row = document.createElement("div");
-    row.className = "agent-row";
+    row.className = "flex items-start gap-3 border-b border-neutral-800 py-3 last:border-0";
     const dot = document.createElement("span");
-    dot.className = "agent-dot";
+    dot.className = "mt-1.5 size-1.5 shrink-0 rounded-full bg-neutral-600";
     const copy = document.createElement("div");
-    copy.className = "agent-copy";
+    copy.className = "grid min-w-0 gap-1";
     const name = document.createElement("strong");
+    name.className = "text-[11px] font-medium text-neutral-200";
     name.textContent = payload.agent;
     const message = document.createElement("span");
+    message.className = "text-[10px] leading-5 text-neutral-500";
     copy.append(name, message);
     row.append(dot, copy);
     agentRows.set(payload.agent, row);
     agentList.append(row);
   }
-  row.className = `agent-row ${payload.state}`;
+  const dot = row.firstElementChild;
+  dot.className = `mt-1.5 size-1.5 shrink-0 rounded-full ${
+    payload.state === "working"
+      ? "animate-pulse bg-white"
+      : payload.state === "done"
+        ? "bg-neutral-300"
+        : "bg-neutral-600"
+  }`;
   row.querySelector(".agent-copy span").textContent = payload.message;
 }
 
@@ -86,21 +94,21 @@ function renderSources(sources) {
       // The server already filters source URLs; retain the original if parsing fails.
     }
     const link = document.createElement("a");
-    link.className = "source-item";
+    link.className = "group block border-b border-neutral-800 px-1 py-3 last:border-0";
     link.href = source.url;
     link.target = "_blank";
     link.rel = "noopener noreferrer";
     const top = document.createElement("div");
-    top.className = "source-top";
+    top.className = "mb-1.5 flex items-center gap-2";
     const id = document.createElement("span");
-    id.className = "source-id";
+    id.className = "font-mono text-[9px] text-neutral-300";
     id.textContent = source.id;
     const domain = document.createElement("span");
-    domain.className = "source-domain";
+    domain.className = "truncate text-[9px] text-neutral-500";
     domain.textContent = hostname;
     top.append(id, domain);
     const title = document.createElement("div");
-    title.className = "source-title";
+    title.className = "text-[11px] leading-5 text-neutral-300 transition group-hover:text-white";
     title.textContent = source.title;
     link.append(top, title);
     sourceList.append(link);

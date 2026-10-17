@@ -140,6 +140,9 @@ test("web UI and its local assets are served", async () => {
   const css = await fetch(`${baseUrl}/styles.css`);
   assert.equal(css.status, 200);
   assert.match(css.headers.get("content-type"), /text\/css/);
+  const stylesheet = await css.text();
+  assert.match(stylesheet, /\.bg-black/);
+  assert.match(stylesheet, /\.text-white/);
 
   const js = await fetch(`${baseUrl}/app.js`);
   assert.equal(js.status, 200);

@@ -3,93 +3,117 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#10110f" />
+    <meta name="theme-color" content="#000000" />
     <title>Orbit — Local research workspace</title>
     <link rel="stylesheet" href="/styles.css" />
     <script src="/app.js" defer></script>
   </head>
-  <body>
-    <div class="app-shell">
-      <aside class="sidebar">
-        <a class="brand" href="/" aria-label="Orbit home">
-          <span class="brand-mark" aria-hidden="true"><i></i></span>
+  <body class="min-h-screen bg-black font-sans text-white antialiased selection:bg-white selection:text-black">
+    <div class="min-h-screen">
+      <aside class="fixed inset-x-0 top-0 z-10 flex h-14 flex-row items-center justify-between border-b border-neutral-800 bg-black px-5 md:inset-y-0 md:left-0 md:h-auto md:w-64 md:flex-col md:items-stretch md:justify-start md:border-b-0 md:border-r md:px-5 md:py-7">
+        <a class="ml-0 flex w-max items-center gap-3 text-xl font-semibold tracking-tight text-white no-underline md:mb-10 md:ml-2" href="/" aria-label="Orbit home">
+          <span class="grid size-7 place-items-center rounded-full border border-white" aria-hidden="true">
+            <span class="size-2 rounded-full bg-white"></span>
+          </span>
           <span>orbit</span>
         </a>
-        <button class="new-research" id="new-research" type="button">
-          <span aria-hidden="true">+</span> New research
+        <button class="flex min-h-11 items-center gap-3 rounded-lg border border-neutral-700 bg-neutral-950 px-3 text-left text-sm text-white transition hover:border-neutral-500 hover:bg-neutral-900" id="new-research" type="button">
+          <span class="text-lg leading-none">+</span> New research
         </button>
-        <div class="side-label">YOUR WORKSPACE</div>
-        <div class="workspace-note">
-          <span class="workspace-icon">◎</span>
+        <div class="mb-3 mt-10 hidden px-2 font-mono text-[10px] tracking-[.16em] text-neutral-500 md:block">YOUR WORKSPACE</div>
+        <div class="hidden min-h-10 items-center gap-3 rounded-md px-2 text-sm text-neutral-300 md:flex">
+          <span class="text-neutral-400" aria-hidden="true">◎</span>
           <span>Research desk</span>
-          <span class="local-tag">LOCAL</span>
+          <span class="ml-auto rounded border border-neutral-700 px-1.5 py-0.5 font-mono text-[9px] text-neutral-400">LOCAL</span>
         </div>
-        <div class="sidebar-bottom">
-          <div class="privacy-icon" aria-hidden="true">⌂</div>
+        <div class="mt-auto hidden items-start gap-3 border-t border-neutral-800 px-1 pt-5 md:flex">
+          <span class="text-lg text-neutral-300" aria-hidden="true">⌂</span>
           <div>
-            <strong>Runs on your device</strong>
-            <p>Ollama model · Local search service</p>
+            <strong class="block text-xs font-medium text-neutral-200">Runs on your device</strong>
+            <p class="mt-1 text-[10px] text-neutral-500">Ollama model · Local search</p>
           </div>
         </div>
       </aside>
 
-      <main class="main">
-        <header class="topbar">
-          <div class="breadcrumb"><span>Workspace</span><b>/</b><strong>Research</strong></div>
-          <div class="connection" id="connection"><span></span><span>Checking local services</span></div>
+      <div class="flex min-h-screen flex-col pt-14 md:ml-64 md:pt-0">
+        <header class="flex h-14 shrink-0 items-center justify-between border-b border-neutral-800 px-5 sm:px-8">
+          <div class="flex items-center gap-2 text-xs">
+            <span class="hidden text-neutral-500 md:inline">Workspace</span>
+            <span class="hidden text-neutral-700 md:inline">/</span>
+            <strong class="font-medium text-neutral-200">Research</strong>
+          </div>
+          <div class="flex items-center gap-2 text-[11px] text-neutral-400" id="connection">
+            <span class="size-1.5 rounded-full bg-neutral-500"></span>
+            <span>Checking local services</span>
+          </div>
         </header>
 
-        <section class="welcome" id="welcome">
-          <div class="eyebrow"><span></span> YOUR LOCAL RESEARCH TEAM</div>
-          <h1>Good questions<br />move you <em>forward.</em></h1>
-          <p class="intro">Ask anything. A small team of agents will plan, search, analyze sources, and write a cited answer — right here on your device.</p>
-
-          <form class="prompt-card" id="research-form">
-            <label class="sr-only" for="question">What would you like to research?</label>
-            <textarea id="question" name="question" rows="3" maxlength="600" placeholder="What would you like to understand?" required></textarea>
-            <div class="prompt-actions">
-              <div class="prompt-hint"><span class="sparkle">✳</span> Research across the web with sources</div>
-              <button class="submit-button" id="submit-button" type="submit">
-                <span>Start research</span><span aria-hidden="true">↗</span>
-              </button>
+        <main class="mx-auto flex w-full max-w-6xl flex-1 flex-col px-5 sm:px-8">
+          <section class="mx-auto my-auto w-full max-w-3xl py-16" id="welcome">
+            <div class="flex items-center gap-2 font-mono text-[10px] tracking-[.16em] text-neutral-400">
+              <span class="size-1.5 rounded-full bg-white"></span> YOUR LOCAL RESEARCH TEAM
             </div>
-          </form>
-          <div class="suggestions">
-            <span>TRY ASKING</span>
-            <button type="button" data-prompt="What are the most promising open-source alternatives to hosted AI research tools? Compare their deployment and privacy trade-offs.">Compare open-source AI research tools</button>
-            <button type="button" data-prompt="What changed in passkey support across major browsers recently? Find primary sources and note compatibility caveats.">Explore a technical topic</button>
-          </div>
-          <div class="local-note"><span>⌂</span> Your model runs locally. Web search uses your configured SearXNG service.</div>
-        </section>
+            <h1 class="mt-7 text-5xl font-medium leading-[1.08] tracking-[-.055em] sm:text-6xl">Good questions<br />move you <span class="text-neutral-400">forward.</span></h1>
+            <p class="mt-5 max-w-xl text-sm leading-7 text-neutral-400">Ask anything. A small team of agents will plan, search, analyze sources, and write a cited answer — right here on your device.</p>
 
-        <section class="research-view hidden" id="research-view" aria-live="polite">
-          <div class="question-heading">
-            <div class="eyebrow"><span></span> RESEARCH SESSION</div>
-            <h1 id="question-title"></h1>
-          </div>
-          <div class="research-layout">
-            <div class="answer-column">
-              <div class="agents-card">
-                <div class="card-heading"><span class="heading-icon">✳</span><div><strong>Agent team</strong><span>Working together on your question</span></div><span class="team-status" id="team-status">READY</span></div>
-                <div class="agent-list" id="agent-list"></div>
+            <form class="mt-9 rounded-xl border border-neutral-700 bg-neutral-950 p-4 transition focus-within:border-neutral-400" id="research-form">
+              <label class="sr-only" for="question">What would you like to research?</label>
+              <textarea class="min-h-24 w-full resize-y border-0 bg-transparent text-sm leading-6 text-white outline-none placeholder:text-neutral-600" id="question" name="question" rows="3" maxlength="600" placeholder="What would you like to understand?" required></textarea>
+              <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+                <div class="text-[11px] text-neutral-500"><span class="mr-1 text-neutral-300">✳</span> Research across the web with sources</div>
+                <button class="inline-flex items-center gap-3 rounded-md bg-white px-3.5 py-2.5 text-xs font-semibold text-black transition hover:bg-neutral-200 disabled:cursor-wait disabled:opacity-50" id="submit-button" type="submit">
+                  <span>Start research</span><span aria-hidden="true">↗</span>
+                </button>
               </div>
-              <div class="answer-card hidden" id="answer-card">
-                <div class="answer-header"><span class="answer-mark">✳</span><strong>Research answer</strong><span class="answer-model" id="answer-model"></span></div>
-                <div class="answer-text" id="answer-text"></div>
-                <div class="answer-footnote">Generated by your local model from the sources listed alongside this answer.</div>
-              </div>
-              <div class="error-card hidden" id="error-card" role="alert"></div>
+            </form>
+            <div class="mt-5 flex flex-wrap items-center gap-2">
+              <span class="mr-1 font-mono text-[9px] tracking-widest text-neutral-600">TRY ASKING</span>
+              <button class="rounded-md border border-neutral-800 px-2.5 py-2 text-left text-[11px] text-neutral-400 transition hover:border-neutral-600 hover:text-white" type="button" data-prompt="What are the most promising open-source alternatives to hosted AI research tools? Compare their deployment and privacy trade-offs.">Compare open-source AI research tools</button>
+              <button class="rounded-md border border-neutral-800 px-2.5 py-2 text-left text-[11px] text-neutral-400 transition hover:border-neutral-600 hover:text-white" type="button" data-prompt="What changed in passkey support across major browsers recently? Find primary sources and note compatibility caveats.">Explore a technical topic</button>
             </div>
-            <aside class="sources-card hidden" id="sources-card">
-              <div class="card-heading sources-heading"><div><strong>Sources</strong><span id="source-count">Collected during research</span></div></div>
-              <div class="source-list" id="source-list"></div>
-            </aside>
-          </div>
-        </section>
+            <div class="mt-7 flex items-center gap-2 text-[11px] text-neutral-500"><span class="text-neutral-300">⌂</span> Your model runs locally. Web search uses your configured SearXNG service.</div>
+          </section>
 
-        <footer class="footer"><span>ORBIT RESEARCH</span><span>Local-first · Open source foundation</span><span>Built for thoughtful work</span></footer>
-      </main>
+          <section class="hidden w-full py-10 sm:py-14" id="research-view" aria-live="polite">
+            <div class="mb-8 max-w-3xl">
+              <div class="flex items-center gap-2 font-mono text-[10px] tracking-[.16em] text-neutral-400"><span class="size-1.5 rounded-full bg-white"></span> RESEARCH SESSION</div>
+              <h1 class="mt-4 text-3xl font-medium leading-snug tracking-tight [overflow-wrap:anywhere]" id="question-title"></h1>
+            </div>
+            <div class="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
+              <div class="grid min-w-0 gap-4">
+                <div class="rounded-lg border border-neutral-800 bg-neutral-950">
+                  <div class="flex min-h-14 items-center gap-3 border-b border-neutral-800 px-4 py-3">
+                    <span class="text-neutral-300">✳</span>
+                    <div class="grid gap-1"><strong class="text-xs font-medium">Agent team</strong><span class="text-[10px] text-neutral-500">Working together on your question</span></div>
+                    <span class="ml-auto font-mono text-[9px] text-neutral-500" id="team-status">READY</span>
+                  </div>
+                  <div class="px-4 py-2" id="agent-list"></div>
+                </div>
+                <div class="hidden rounded-lg border border-neutral-800 bg-neutral-950 p-5" id="answer-card">
+                  <div class="flex items-center gap-2 border-b border-neutral-800 pb-3">
+                    <span class="text-neutral-300">✳</span><strong class="text-xs font-medium">Research answer</strong>
+                    <span class="ml-auto font-mono text-[9px] text-neutral-500" id="answer-model"></span>
+                  </div>
+                  <div class="whitespace-pre-wrap break-words pt-4 text-sm leading-7 text-neutral-200" id="answer-text"></div>
+                  <div class="mt-4 border-t border-neutral-800 pt-3 text-[10px] text-neutral-500">Generated by your local model from the sources listed alongside this answer.</div>
+                </div>
+                <div class="hidden rounded-lg border border-neutral-600 bg-neutral-950 px-4 py-3 text-xs leading-6 text-neutral-200" id="error-card" role="alert"></div>
+              </div>
+              <aside class="hidden rounded-lg border border-neutral-800 bg-neutral-950 lg:sticky lg:top-4" id="sources-card">
+                <div class="flex min-h-14 items-center border-b border-neutral-800 px-4">
+                  <div class="grid gap-1"><strong class="text-xs font-medium">Sources</strong><span class="text-[10px] text-neutral-500" id="source-count">Collected during research</span></div>
+                </div>
+                <div class="px-3 py-1" id="source-list"></div>
+              </aside>
+            </div>
+          </section>
+
+          <footer class="mt-auto flex flex-wrap justify-between gap-x-4 gap-y-2 border-t border-neutral-800 py-4 text-[10px] text-neutral-600">
+            <span class="font-mono tracking-wider">ORBIT RESEARCH</span><span class="hidden sm:inline">Local-first · Open source foundation</span><span>Built for thoughtful work</span>
+          </footer>
+        </main>
+      </div>
     </div>
-    <div class="toast hidden" id="toast" role="status"></div>
+    <div class="fixed bottom-5 right-5 z-20 hidden max-w-sm rounded-lg border border-neutral-700 bg-neutral-950 px-4 py-3 text-xs text-white shadow-2xl" id="toast" role="status"></div>
   </body>
 </html>

@@ -1,5 +1,6 @@
 .git
 .env
 node_modules
+public/generated.css
 npm-debug.log
 *.log

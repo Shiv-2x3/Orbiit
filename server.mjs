@@ -7,7 +7,7 @@ const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const INDEX_HTML = path.join(ROOT, "public", "index.html");
 const STATIC_ASSETS = new Map([
   ["/app.js", { file: path.join(ROOT, "public", "app.js"), type: "text/javascript; charset=utf-8" }],
-  ["/styles.css", { file: path.join(ROOT, "public", "styles.css"), type: "text/css; charset=utf-8" }],
+  ["/styles.css", { file: path.join(ROOT, "public", "generated.css"), type: "text/css; charset=utf-8" }],
 ]);
 const MAX_BODY_BYTES = 16 * 1024;
 const MAX_QUESTION_LENGTH = 600;

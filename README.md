@@ -55,7 +55,7 @@ the direct Node.js server to the local machine.
 
 ## What the agents do
 
-1. **Planner** turns a question into up to four focused searches.
+1. **Planner** turns a question into up to three focused searches.
 2. **Researcher** fetches results from SearXNG and deduplicates source URLs.
 3. **Analyst** extracts claims and must associate each finding with supplied
    source IDs.
@@ -81,9 +81,18 @@ separately and inserts model output as text rather than HTML.
 
 ## Development checks
 
-No npm packages are required:
+Install the locked development dependency, compile Tailwind CSS, and run tests:
 
 ```sh
+npm ci
+npm run build:css
 node --test
 docker compose config
 ```
+
+The UI uses Tailwind CSS utilities with a black, white, and neutral-gray
+palette.
+The Tailwind CSS input is `public/styles.css`; compiled output is
+`public/generated.css` and is ignored by Git. Docker compiles the stylesheet
+during its asset build stage and copies only the generated CSS into the runtime
+image.
