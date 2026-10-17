@@ -1,0 +1,10 @@
+use_default_settings: true
+
+server:
+  secret_key: "replace-with-a-long-random-value-before-sharing"
+  limiter: false
+
+search:
+  formats:
+    - html
+    - json
