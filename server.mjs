@@ -11,6 +11,14 @@ const STATIC_ASSETS = new Map([
     file: path.join(ROOT, "public", "agent-renderer.mjs"),
     type: "text/javascript; charset=utf-8",
   }],
+  ["/favicon.ico", {
+    file: path.join(ROOT, "public", "favicon.svg"),
+    type: "image/svg+xml",
+  }],
+  ["/favicon.svg", {
+    file: path.join(ROOT, "public", "favicon.svg"),
+    type: "image/svg+xml",
+  }],
   ["/styles.css", { file: path.join(ROOT, "public", "generated.css"), type: "text/css; charset=utf-8" }],
 ]);
 const MAX_BODY_BYTES = 16 * 1024;

@@ -12,7 +12,7 @@ ENV NODE_ENV=production
 WORKDIR /app
 
 COPY server.mjs ./server.mjs
-COPY public/index.html public/app.js public/agent-renderer.mjs ./public/
+COPY public/index.html public/app.js public/agent-renderer.mjs public/favicon.svg ./public/
 COPY --from=assets /app/public/generated.css ./public/generated.css
 
 USER node

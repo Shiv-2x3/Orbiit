@@ -151,6 +151,10 @@ test("web UI and its local assets are served", async () => {
   const agentRenderer = await fetch(`${baseUrl}/agent-renderer.mjs`);
   assert.equal(agentRenderer.status, 200);
   assert.match(await agentRenderer.text(), /data-agent-message/);
+
+  const favicon = await fetch(`${baseUrl}/favicon.ico`);
+  assert.equal(favicon.status, 200);
+  assert.match(favicon.headers.get("content-type"), /image\/svg\+xml/);
 });
 
 test("research endpoint streams agent progress, sources, and cited answer", async () => {
